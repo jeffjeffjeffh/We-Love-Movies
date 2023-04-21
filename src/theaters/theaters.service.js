@@ -14,11 +14,15 @@ const addMovies = reduceProperties("theater_id", {
   mt_theater_id: ["movies", null, "theater_id"],
 });
 
+// TODO: Having trouble embedding the movie's created_at and updated_at properties.
+//  It looks like knex is only giving us the created_at and updated_at for each theater.
+//    Same thing goes for theater_id; it looks like a property name can only be used once,
+//    even if it is to be embedded in an object with reduceProperties.
 function list() {
   return knex("theaters as t")
     .join("movies_theaters as mt", "t.theater_id", "mt.theater_id")
     .join("movies as m", "mt.movie_id", "m.movie_id")
-    .select("*")
+    .select("t.*", "m.*", "mt.theater_id")
     .then(addMovies);
 }
 
