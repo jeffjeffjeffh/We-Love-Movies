@@ -38,22 +38,20 @@ function listTheaters(movieId) {
     .where({ "m.movie_id": movieId });
 }
 
-function listReviews(movieId) {
-  return knex("reviews as r").select("*").where({ "r.movie_id": movieId });
-}
-
 function read(movieId) {
   return knex("movies")
     .select(
-      "movie_id as id",
+      "movie_id",
       "title",
       "runtime_in_minutes",
       "rating",
       "description",
-      "image_url"
+      "image_url",
+      "created_at",
+      "updated_at"
     )
     .where({ movie_id: movieId })
     .first();
 }
 
-module.exports = { list, listTheaters, listReviews, read };
+module.exports = { list, listTheaters, read };

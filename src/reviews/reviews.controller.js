@@ -5,7 +5,7 @@ const VALID_REVIEW_PROPERTIES = ["score", "content"];
 
 // VALIDATIONS
 async function reviewExists(req, res, next) {
-  const { reviewId } = req.params;
+  const reviewId = Number(req.params.reviewId);
   const data = await service.read(reviewId);
   if (data) {
     res.locals.review = data;
@@ -18,21 +18,19 @@ async function reviewExists(req, res, next) {
   }
 }
 
-function hasProperty(propertyName) {
-  return function (req, res, next) {
-    const { data = {} } = req.body;
-    if (data[propertyName]) {
-      return next();
-    }
-    next({ status: 400, message: `Must include a ${propertyName}` });
-  };
+function hasPropertyToUpdate(req, res, next) {
+  const { score, content } = req.body.data;
+  if (score || content) {
+    return next();
+  }
+  next({ status: 400, message: `Must include a score or content` });
 }
 
 // OPERATIONS
-async function destroy(req, res) {
-  const { reviewId } = req.params;
-  await service.destroy(reviewId);
-  res.sendStatus(204);
+async function list(req, res) {
+  const movieId = Number(req.params.movieId);
+  const data = await service.list(movieId);
+  res.json({ data });
 }
 
 async function update(req, res) {
@@ -42,12 +40,18 @@ async function update(req, res) {
   res.json({ data });
 }
 
+async function destroy(req, res) {
+  const { reviewId } = req.params;
+  await service.destroy(reviewId);
+  res.sendStatus(204);
+}
+
 module.exports = {
-  destroy: [asyncErrorBoundary(reviewExists), asyncErrorBoundary(destroy)],
+  list: asyncErrorBoundary(list),
   update: [
     asyncErrorBoundary(reviewExists),
-    asyncErrorBoundary(hasProperty("content")),
-    asyncErrorBoundary(hasProperty("score")),
+    asyncErrorBoundary(hasPropertyToUpdate),
     asyncErrorBoundary(update),
   ],
+  destroy: [asyncErrorBoundary(reviewExists), asyncErrorBoundary(destroy)],
 };
