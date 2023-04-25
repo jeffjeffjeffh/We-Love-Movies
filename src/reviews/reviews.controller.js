@@ -50,7 +50,7 @@ module.exports = {
   list: asyncErrorBoundary(list),
   update: [
     asyncErrorBoundary(reviewExists),
-    asyncErrorBoundary(hasPropertyToUpdate),
+    hasPropertyToUpdate,
     asyncErrorBoundary(update),
   ],
   destroy: [asyncErrorBoundary(reviewExists), asyncErrorBoundary(destroy)],

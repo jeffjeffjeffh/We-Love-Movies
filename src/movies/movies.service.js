@@ -1,41 +1,30 @@
 const knex = require("../db/connection");
 
-function list(is_showing) {
-  // TODO: This test fails on local machine, but the feature works just fine for me.
-  // What happen?
-  // Test on Qualified and see if it works there.
-  if (is_showing) {
-    return knex("movies as m")
-      .join("movies_theaters as mt", "m.movie_id", "mt.movie_id")
-      .select(
-        "m.movie_id as id",
-        "m.title",
-        "m.runtime_in_minutes",
-        "m.rating",
-        "m.description",
-        "m.image_url"
-      )
-      .distinct("m.title")
-      .where({ "mt.is_showing": true })
-      .orderBy("m.movie_id");
-  } else {
-    return knex("movies").select(
-      "movie_id as id",
-      "title",
-      "runtime_in_minutes",
-      "rating",
-      "description",
-      "image_url"
-    );
-  }
+function list() {
+  return knex("movies").select(
+    "movie_id as id",
+    "title",
+    "runtime_in_minutes",
+    "rating",
+    "description",
+    "image_url"
+  );
 }
 
-function listTheaters(movieId) {
+function listShowing() {
   return knex("movies as m")
     .join("movies_theaters as mt", "m.movie_id", "mt.movie_id")
-    .join("theaters as t", "t.theater_id", "mt.theater_id")
-    .select("t.*", "mt.is_showing", "m.movie_id")
-    .where({ "m.movie_id": movieId });
+    .select(
+      "m.movie_id as id",
+      "m.title",
+      "m.runtime_in_minutes",
+      "m.rating",
+      "m.description",
+      "m.image_url"
+    )
+    .distinct("m.title")
+    .where({ "mt.is_showing": true })
+    .orderBy("m.movie_id");
 }
 
 function read(movieId) {
@@ -54,4 +43,4 @@ function read(movieId) {
     .first();
 }
 
-module.exports = { list, listTheaters, read };
+module.exports = { list, listShowing, read };

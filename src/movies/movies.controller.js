@@ -1,7 +1,7 @@
 const service = require("./movies.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
-// VALIDATIONS
+// VALIDATION
 async function movieHasMatchingId(req, res, next) {
   const { movieId } = req.params;
   const movie = await service.read(movieId);
@@ -20,13 +20,12 @@ async function movieHasMatchingId(req, res, next) {
 // OPERATIONS
 async function list(req, res) {
   const { is_showing } = req.query;
-  const data = await service.list(is_showing);
-  res.json({ data });
-}
-
-async function listTheaters(req, res) {
-  const { movieId } = req.params;
-  const data = await service.listTheaters(movieId);
+  let data = {};
+  if (is_showing) {
+    data = await service.listShowing();
+  } else {
+    data = await service.list();
+  }
   res.json({ data });
 }
 
@@ -36,10 +35,6 @@ async function read(req, res) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  listTheaters: [
-    asyncErrorBoundary(movieHasMatchingId),
-    asyncErrorBoundary(listTheaters),
-  ],
   read: [asyncErrorBoundary(movieHasMatchingId), asyncErrorBoundary(read)],
   movieHasMatchingId,
 };
