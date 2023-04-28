@@ -2,7 +2,7 @@ const knex = require("../db/connection");
 
 function list() {
   return knex("movies").select(
-    "movie_id as id",
+    "movie_id",
     "title",
     "runtime_in_minutes",
     "rating",
@@ -15,7 +15,7 @@ function listShowing() {
   return knex("movies as m")
     .join("movies_theaters as mt", "m.movie_id", "mt.movie_id")
     .select(
-      "m.movie_id as id",
+      "m.movie_id",
       "m.title",
       "m.runtime_in_minutes",
       "m.rating",
